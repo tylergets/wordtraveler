@@ -8,14 +8,12 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         loading: false,
-        results: {},
+        results: null,
         word: null,
         defs: null,
+        history: [],
     },
     mutations: {
-        changeWord(state, word) {
-            state.word = word;
-        },
         setLoading(state, loading) {
             state.loading = loading;
         },
@@ -24,12 +22,19 @@ export default new Vuex.Store({
         },
         setDefinitions(state, defs) {
             state.defs = defs;
+        },
+        setWord(state, word) {
+            document.title = word;
+            state.word = word;
+            state.history.push(word);
         }
     },
     actions: {
         searchWord({commit}, word) {
-            document.title = "WT: word";
+            commit('setWord', word);
             commit('setLoading', true);
+            commit('setResults', null);
+            commit('setDefinitions', null);
             Promise.all([
                 finder(word).then((words) => {
                     commit('setResults', words);
